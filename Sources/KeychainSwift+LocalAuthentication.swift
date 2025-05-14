@@ -58,7 +58,7 @@ extension KeychainSwift {
     return secureSet(data, forKey: key, context: context)
   }
   
-  public func secureGetData(_ key: String, asReference: Bool = false, context: LAContext) -> Data? {
+  public func secureGetData(_ key: String, asReference: Bool = false, context: LAContext? = nil) -> Data? {
     // The lock prevents the code to be run simultaneously
     // from multiple threads which may result in crashing
     lock.lock()
@@ -69,9 +69,11 @@ extension KeychainSwift {
     var query: [String: Any] = [
       KeychainSwiftConstants.klass       : kSecClassGenericPassword,
       KeychainSwiftConstants.attrAccount : prefixedKey,
-      KeychainSwiftConstants.matchLimit  : kSecMatchLimitOne,
-      KeychainSwiftConstants.authenticationContext: context
+      KeychainSwiftConstants.matchLimit  : kSecMatchLimitOne
     ]
+    if let context {
+      query[KeychainSwiftConstants.authenticationContext] = context
+    }
     
     if asReference {
       query[KeychainSwiftConstants.returnReference] = kCFBooleanTrue
@@ -96,7 +98,7 @@ extension KeychainSwift {
     return nil
   }
   
-  public func secureGet(_ key: String, context: LAContext) -> String? {
+  public func secureGet(_ key: String, context: LAContext? = nil) -> String? {
     if let data = secureGetData(key, context: context) {
       
       if let currentString = String(data: data, encoding: .utf8) {
@@ -109,7 +111,7 @@ extension KeychainSwift {
     return nil
   }
   
-  public func secureGetBool(_ key: String, context: LAContext) -> Bool? {
+  public func secureGetBool(_ key: String, context: LAContext? = nil) -> Bool? {
     guard let data = secureGetData(key, context: context) else { return nil }
     guard let firstBit = data.first else { return nil }
     return firstBit == 1
