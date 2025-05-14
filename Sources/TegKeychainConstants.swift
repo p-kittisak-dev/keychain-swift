@@ -39,6 +39,12 @@ public struct KeychainSwiftConstants {
     
   /// A value that corresponds to matching an unlimited number of items
   public static var secMatchLimitAll : String { return toString(kSecMatchLimitAll) }
+  
+  /// A value required for accessing keychain with local authentication
+  public static let accessControl = toString(kSecAttrAccessControl)
+  
+  /// An optional local authentication context for accessing keychain with local authentication
+  public static let authenticationContext = toString(kSecUseAuthenticationContext)
     
   static func toString(_ value: CFString) -> String {
     return value as String
